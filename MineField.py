@@ -12,14 +12,16 @@ class MineField:
             self._col = col
 
             self._num_of_mines = 0
-            """It does not matter that even square that represents a mine has a non-zero number. We will never use
-            the number because we first check whether a square is mine and then we do not need it. 
+            """It does not matter that a square that represents a mine has a non-zero number. We will never use
+            the number because we first check whether a square is mine and in that case we no more need it. 
             Alternative implementation might consider number 9 as a sign that the particular square represents a mine, 
-            but this one should save time as comparison of types bool is faster and we first have to check whether square 
-            is a mine anyway."""
+            but this one should save time as comparison of types bool is faster and we first have to check whether 
+            square is a mine anyway."""
 
             self._is_mine = is_mine
             self._is_flagged = False
+            """The flag is supposed to prevent the player to accidentally trigger a potential mine by mis-clicking."""
+
             self._is_revealed = False
 
         @property
@@ -104,7 +106,21 @@ class MineField:
     def unflag(self, col: int, row: int):
         self.field[col][row].is_flagged = False
 
+    def boom(self):
+        # TO DO: implement this function.
+        """Game over."""
+        pass
+
     def reveal(self, col: int, row: int):
+        """This function represents a click on the square - reveals the square. If the square contains a mine,
+        it is triggered by calling 'boom()'. If no neighbor is a mine (_num_of_mines == 0), the function calls itself
+        with parameters of all the neighbors."""
+        if not self.field[col][row].is_revealed:
+            return
+
+        if self.field[col][row].is_mine:
+            self.boom()
+
         self.field[col][row].is_revealed = True
 
         if self.field[col][row].number == 0:
