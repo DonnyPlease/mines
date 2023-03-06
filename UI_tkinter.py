@@ -56,6 +56,11 @@ class UI:
 
         #self.start_timer(0)
 
+        # self.num_of_cols = tkinter.IntVar(value=self._number_of_columns)
+        # self.num_of_rows = tkinter.IntVar(value=self._number_of_rows)
+        # self.num_of_mines = tkinter.IntVar(value=self._number_of_mines)
+
+
         self.draw()
 
     def start_timer(self, secs):
@@ -73,7 +78,7 @@ class UI:
 
         self._settings = tkinter.Menu(self._menubar, tearoff=0)
         self._settings.add_command(label="Default settings", command=lambda: self.reset(True))
-        self._settings.add_command(label="Customize")
+        self._settings.add_command(label="Customize", command=lambda: self._ask_params())
         self._menubar.add_cascade(label="Options", menu=self._settings)
 
         self._help_menu = tkinter.Menu(self._menubar, tearoff=0)
@@ -85,7 +90,7 @@ class UI:
 
         # Keyboard shortcuts
         self.root.bind_all("<Control-q>", lambda event: self.root.quit())
-        self.root.bind_all("<F5>", lambda event: self.reset())
+        self.root.bind_all("<F5>", lambda event: self.reset(False))
 
     def _import_images(self):
         size = self._col_size - 1
@@ -111,12 +116,21 @@ class UI:
         self._height_of_canvas = self._number_of_rows * self._row_size + 1
         self._canvas_field.config(width=self._width_of_canvas, height=self._height_of_canvas)
 
-    def reset(self, default=True):
-        del self.Field
+    def reset(self, default=True, new_params=None):
         if default:
             self._number_of_rows = 10
             self._number_of_columns = 10
             self._number_of_mines = 10
+
+        if new_params is None:
+            new_params = [self._number_of_columns, self._number_of_rows, self._number_of_mines]
+
+        if not default:
+            self._number_of_rows = new_params[1]
+            self._number_of_columns = new_params[0]
+            self._number_of_mines = new_params[2]
+
+        del self.Field
         self.Field = MineField.MineField(self._number_of_columns, self._number_of_rows, self._number_of_mines)
 
         self.set_canvas()
@@ -223,3 +237,50 @@ class UI:
         self._draw_insides()
         self._draw_grid()
         self.root.update()
+
+    def _ask_params(self):
+        param_window = tkinter.Toplevel(self.root)
+        param_window.title("Customize")
+        param_window.iconphoto(False, self.logo)
+        # sets the geometry of toplevel
+        # param_window.geometry("200x200")
+
+        # param_window.attributes('-toolwindow', True)
+        # set maximum window size value
+        height = 120
+        width =160
+        param_window.maxsize(width=width, height=height)
+        param_window.minsize(width=width, height=height)
+
+        # A Label widget to show in toplevel
+        title = tkinter.Label(param_window, text="CUSTOMIZE THE GAME")
+        cols_label = tkinter.Label(param_window, text="Number of columns:")
+        rows_label = tkinter.Label(param_window, text="Number of rows:")
+        mines_label = tkinter.Label(param_window, text="Number of mines:")
+
+        num_of_cols = tkinter.IntVar(value=self._number_of_columns)
+        num_of_rows = tkinter.IntVar(value=self._number_of_rows)
+        num_of_mines = tkinter.IntVar(value=self._number_of_mines)
+
+        cols_spin = tkinter.Spinbox(param_window, from_=1, to=999, width=3, textvariable=num_of_cols)
+        rows_spin = tkinter.Spinbox(param_window, from_=1, to=999, width=3, textvariable=num_of_rows)
+        mines_spin = tkinter.Spinbox(param_window, from_=1, to=999, width=3, textvariable=num_of_mines)
+
+        title.grid(column=0, row=0, columnspan=2)
+        cols_label.grid(column=0, row=1, sticky='e')
+        rows_label.grid(column=0, row=2, sticky='e')
+        mines_label.grid(column=0, row=3, sticky='e')
+
+        cols_spin.grid(column=1, row=1, sticky='w')
+        rows_spin.grid(column=1, row=2, sticky='w')
+        mines_spin.grid(column=1, row=3, sticky='w')
+
+        ButtonSet = tkinter.ttk.Button(param_window, text="Set",
+                                       command=lambda: [self.reset(False, [int(cols_spin.get()),
+                                                                           int(rows_spin.get()),
+                                                                           int(mines_spin.get())]),
+                                                        param_window.destroy()
+                                                        ])
+        ButtonSet.grid(column=0, row=4, columnspan=2)  # Update button
+
+

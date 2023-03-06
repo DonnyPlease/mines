@@ -86,12 +86,12 @@ class MineField:
         self.field = []
         """This list contains instances of squares of the mine field. It is a two dimensional list (each row is a list).
         """
-        for row in range(number_of_rows):
-            new_row = []
-            for col in range(number_of_columns):
-                new_row.append(self.Square(col=col, row=row))
+        for col in range(number_of_columns):
+            new_col = []
+            for row in range(number_of_rows):
+                new_col.append(self.Square(col=col, row=row))
                 self._list_of_safe_squares.append([col, row])
-            self.field.append(new_row)
+            self.field.append(new_col)
 
         self._generate_mines() # Generate mines, which saves a list of mine coordinates into a list 'self._mines'.
 
