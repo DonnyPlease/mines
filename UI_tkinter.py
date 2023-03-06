@@ -2,6 +2,7 @@ import tkinter
 import tkinter.ttk
 import MineField
 from PIL import Image, ImageTk
+import PIL
 import time
 
 
@@ -13,10 +14,11 @@ class UI:
     def __init__(self, Field):
         self.root = tkinter.Tk()
         self.root.title('Minesweeper')
+        self.root.resizable(False, False)
 
-        self.logo = (Image.open("logo.png"))
-        self.logo = self.logo.resize((18, 18), Image.ANTIALIAS)
-        self.logo = ImageTk.PhotoImage(self.logo)
+        self.logo = (PIL.Image.open("logo.png"))
+        self.logo = self.logo.resize((18, 18), PIL.Image.ANTIALIAS)
+        self.logo = PIL.ImageTk.PhotoImage(self.logo)
         self.root.iconphoto(False, self.logo)
 
         # MENU
@@ -242,15 +244,25 @@ class UI:
         param_window = tkinter.Toplevel(self.root)
         param_window.title("Customize")
         param_window.iconphoto(False, self.logo)
+
+        param_window.resizable(False, False)
+
         # sets the geometry of toplevel
         # param_window.geometry("200x200")
 
         # param_window.attributes('-toolwindow', True)
         # set maximum window size value
-        height = 120
-        width =160
-        param_window.maxsize(width=width, height=height)
-        param_window.minsize(width=width, height=height)
+        height = 115
+        width = 155
+
+        # get screen width and height
+        screen_width = param_window.winfo_screenwidth()
+        screen_height = param_window.winfo_screenheight()
+
+        # calculate position x and y coordinates
+        x = (screen_width / 2) - (width / 2)
+        y = (screen_height / 2) - (height / 2)
+        param_window.geometry('%dx%d+%d+%d' % (width, height, x, y))
 
         # A Label widget to show in toplevel
         title = tkinter.Label(param_window, text="CUSTOMIZE THE GAME")
